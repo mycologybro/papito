@@ -94,100 +94,101 @@
   <div id="randomMeal"></div>
 
   <script>
-    async function loadMeals() {
-      const response = await fetch("meals.json");
-      const meals = await response.json();
-      return meals;
+  async function loadMeals() {
+    const response = await fetch("meals.json");
+    const meals = await response.json();
+    return meals;
+  }
+
+  function filterMeals(allMeals) {
+    const mum = document.getElementById("mum").checked;
+    const dad = document.getElementById("dad").checked;
+    const summer = document.getElementById("summer").checked;
+
+    if (!mum && !dad && !summer) {
+      return allMeals; // ✅ now this works
     }
 
-    function filterMeals(meals) {
-      const mum = document.getElementById("mum").checked;
-      const dad = document.getElementById("dad").checked;
-      const summer = document.getElementById("summer").checked;
+    return allMeals.filter(meal => {
+      if (mum && !meal.likes.includes("mum")) return false;
+      if (dad && !meal.likes.includes("dad")) return false;
+      if (summer && !meal.likes.includes("summer")) return false;
+      return true;
+    });
+  }
 
-      if (!mum && !dad && !summer) {
-        return meals;
+  function displayMeals(meals, highlightName = null) {
+    const mealList = document.getElementById("mealList");
+    mealList.innerHTML = "";
+    meals.forEach(meal => {
+      const li = document.createElement("li");
+      li.textContent = meal.name;
+
+      // likes display
+      const likesDiv = document.createElement("div");
+      likesDiv.classList.add("likes");
+
+      if (meal.likes.includes("mum")) {
+        const dot = document.createElement("span");
+        dot.classList.add("dot", "mum");
+        likesDiv.appendChild(dot);
+      }
+      if (meal.likes.includes("dad")) {
+        const dot = document.createElement("span");
+        dot.classList.add("dot", "dad");
+        likesDiv.appendChild(dot);
+      }
+      if (meal.likes.includes("summer")) {
+        const dot = document.createElement("span");
+        dot.classList.add("dot", "summer");
+        likesDiv.appendChild(dot);
       }
 
-      return meals.filter(meal => {
-        if (mum && !meal.likes.includes("mum")) return false;
-        if (dad && !meal.likes.includes("dad")) return false;
-        if (summer && !meal.likes.includes("summer")) return false;
-        return true;
-      });
-    }
+      li.appendChild(likesDiv);
 
-    function displayMeals(meals, highlightName = null) {
-      const mealList = document.getElementById("mealList");
-      mealList.innerHTML = "";
-      meals.forEach(meal => {
-        const li = document.createElement("li");
-        li.textContent = meal.name;
-
-        // likes display
-        const likesDiv = document.createElement("div");
-        likesDiv.classList.add("likes");
-
-        if (meal.likes.includes("mum")) {
-          const dot = document.createElement("span");
-          dot.classList.add("dot", "mum");
-          likesDiv.appendChild(dot);
-        }
-        if (meal.likes.includes("dad")) {
-          const dot = document.createElement("span");
-          dot.classList.add("dot", "dad");
-          likesDiv.appendChild(dot);
-        }
-        if (meal.likes.includes("summer")) {
-          const dot = document.createElement("span");
-          dot.classList.add("dot", "summer");
-          likesDiv.appendChild(dot);
-        }
-
-        li.appendChild(likesDiv);
-
-        if (highlightName && meal.name === highlightName) {
-          li.classList.add("highlight");
-        }
-        mealList.appendChild(li);
-      });
-    }
-
-    function pickRandom(meals) {
-      if (meals.length === 0) return null;
-      const randomIndex = Math.floor(Math.random() * meals.length);
-      return meals[randomIndex].name;
-    }
-
-    document.addEventListener("DOMContentLoaded", async () => {
-      const meals = await loadMeals();
-
-      function updateMeals() {
-        const filtered = filterMeals(meals);
-        displayMeals(filtered);
-        return filtered;
+      if (highlightName && meal.name === highlightName) {
+        li.classList.add("highlight");
       }
+      mealList.appendChild(li);
+    });
+  }
 
-      let currentMeals = updateMeals();
+  function pickRandom(meals) {
+    if (meals.length === 0) return null;
+    const randomIndex = Math.floor(Math.random() * meals.length);
+    return meals[randomIndex].name;
+  }
 
-      document.querySelectorAll(".filters input").forEach(input => {
-        input.addEventListener("change", () => {
-          currentMeals = updateMeals();
-          document.getElementById("randomMeal").textContent = "";
-        });
-      });
+  document.addEventListener("DOMContentLoaded", async () => {
+    const allMeals = await loadMeals();
 
-      document.getElementById("squanch").addEventListener("click", () => {
-        const random = pickRandom(currentMeals);
-        if (random) {
-          document.getElementById("randomMeal").textContent = "👉 " + random;
-          displayMeals(currentMeals, random);
-        } else {
-          document.getElementById("randomMeal").textContent = "No meals match the current filters!";
-        }
+    function updateMeals() {
+      const filtered = filterMeals(allMeals);
+      displayMeals(filtered);
+      return filtered;
+    }
+
+    let currentMeals = updateMeals();
+
+    document.querySelectorAll(".filters input").forEach(input => {
+      input.addEventListener("change", () => {
+        currentMeals = updateMeals();
+        document.getElementById("randomMeal").textContent = "";
       });
     });
-  </script>
+
+    document.getElementById("squanch").addEventListener("click", () => {
+      const random = pickRandom(currentMeals);
+      if (random) {
+        document.getElementById("randomMeal").textContent = "👉 " + random;
+        displayMeals(currentMeals, random);
+      } else {
+        document.getElementById("randomMeal").textContent = "No meals match the current filters!";
+      }
+    });
+  });
+</script>
+
 </body>
 </html>
 
