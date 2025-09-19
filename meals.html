@@ -1,87 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Family Meal Ideas</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f9f5f0;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-    }
-    .filters {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-    .meal-list {
-      max-width: 500px;
-      margin: auto;
-      padding: 20px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    .meal {
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
-    }
-    .meal:last-child {
-      border-bottom: none;
-    }
-  </style>
-</head>
-<body>
-  <h1>Family Meal Ideas</h1>
-  
-  <div class="filters">
-    <label><input type="checkbox" value="Mom"> Mom</label>
-    <label><input type="checkbox" value="Dad"> Dad</label>
-    <label><input type="checkbox" value="summer"> summer/label>
-  </div>
+<script>
+  async function loadMeals() {
+    try {
+      const response = await fetch("meals.json");
+      const meals = await response.json();
 
-  <div class="meal-list" id="mealList">
-    <!-- Meals will load here -->
-  </div>
+      const toggles = document.querySelectorAll(".person-toggle input");
+      const resultsDiv = document.getElementById("results");
 
-  <script>
-    let meals = [];
+      function filterMeals() {
+        const selected = Array.from(toggles)
+          .filter(t => t.checked)
+          .map(t => t.value);
 
-    // Load meals.json
-    fetch("meals.json")
-      .then(res => res.json())
-      .then(data => {
-        meals = data;
-        displayMeals(meals);
-      });
+        const filtered = meals.filter(m =>
+          selected.every(person => m.likedBy.includes(person))
+        );
 
-    // Handle filters
-    document.querySelectorAll(".filters input").forEach(cb => {
-      cb.addEventListener("change", () => {
-        const selected = Array.from(document.querySelectorAll(".filters input:checked")).map(cb => cb.value);
-        if (selected.length === 0) {
-          displayMeals(meals);
+        resultsDiv.innerHTML = "";
+        if (filtered.length > 0) {
+          const ul = document.createElement("ul");
+          filtered.forEach(m => {
+            const li = document.createElement("li");
+            li.textContent = m.meal;
+            ul.appendChild(li);
+          });
+          resultsDiv.appendChild(ul);
         } else {
-          const filtered = meals.filter(meal =>
-            selected.every(person => meal.likedBy.includes(person))
-          );
-          displayMeals(filtered);
+          resultsDiv.textContent = "No meals found.";
         }
-      });
-    });
+      }
 
-    // Display meals
-    function displayMeals(list) {
-      const mealList = document.getElementById("mealList");
-      mealList.innerHTML = list.length > 0 
-        ? list.map(meal => `<div class="meal">${meal.meal}</div>`).join("")
-        : "<p>No meals match this selection.</p>";
+      toggles.forEach(t => t.addEventListener("change", filterMeals));
+      filterMeals();
+    } catch (err) {
+      console.error("Error loading meals:", err);
     }
-  </script>
-</body>
-</html>
+  }
+
+  loadMeals();
+</script>
+
