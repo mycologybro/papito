@@ -1,0 +1,74 @@
+[
+  {
+    "meal": "Sunday Dinner",
+    "likedBy": ["Mum", "Dad", "Summer"]
+  },
+  {
+    "meal": "Stir Fry",
+    "likedBy": ["Mum", "Dad"]
+  },
+  {
+    "meal": "Curry",
+    "likedBy": ["Mum", "Dad", "Summer"]
+  },
+  {
+    "meal": "Schwarma",
+    "likedBy": ["Mum", "Dad", "Summer"]
+  },
+  {
+    "meal": "Burritos",
+    "likedBy": ["Mum", "Dad", "Summer"]
+  },
+  {
+    "meal": "Stroganov",
+    "likedBy": ["Mum", "Dad", "Summer"]
+  },
+  {
+    "meal": "Gyros",
+    "likedBy": ["Mum", "Dad", "Summer"]
+  },
+  {
+    "meal": "Stuffed Peppers",
+    "likedBy": ["Mum", "Dad", "Summer"]
+  },
+  {
+    "meal": "Cheesy Bake",
+    "likedBy": ["Mum", "Dad", "Summer"]
+  },
+  {
+    "meal": "Ratatouille",
+    "likedBy": ["Mum", "Dad", "Summer"]
+  },
+  {
+    "meal": "Burgers",
+    "likedBy": ["Mum", "Dad", "Summer"]
+  },
+  {
+    "meal": "Pasta Bake",
+    "likedBy": ["Dad", "Summer"]
+  },
+  {
+    "meal": "Prawn Cocktail",
+    "likedBy": ["Mum", "Summer"]
+  },
+  {
+    "meal": "Sausage Casserole",
+    "likedBy": ["Mum", "Dad", "Summer"]
+  },
+  {
+    "meal": "Shepherd's Pie",
+    "likedBy": ["Mum", "Dad", "Summer"]
+  },
+  {
+    "meal": "Fish and Parsley",
+    "likedBy": ["Mum", "Summer"]
+  },
+  {
+    "meal": "Soup Tins",
+    "likedBy": ["Mum", "Dad", "Summer"]
+  },
+  {
+    "meal": "Carrot Coriander Soup",
+    "likedBy": ["Mum", "Dad", "Summer"]
+  }
+]
