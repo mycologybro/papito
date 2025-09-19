@@ -1,42 +1,104 @@
-<script>
-  async function loadMeals() {
-    try {
-      const response = await fetch("meals.json");
-      const meals = await response.json();
 
-      const toggles = document.querySelectorAll(".person-toggle input");
-      const resultsDiv = document.getElementById("results");
-
-      function filterMeals() {
-        const selected = Array.from(toggles)
-          .filter(t => t.checked)
-          .map(t => t.value);
-
-        const filtered = meals.filter(m =>
-          selected.every(person => m.likedBy.includes(person))
-        );
-
-        resultsDiv.innerHTML = "";
-        if (filtered.length > 0) {
-          const ul = document.createElement("ul");
-          filtered.forEach(m => {
-            const li = document.createElement("li");
-            li.textContent = m.meal;
-            ul.appendChild(li);
-          });
-          resultsDiv.appendChild(ul);
-        } else {
-          resultsDiv.textContent = "No meals found.";
-        }
-      }
-
-      toggles.forEach(t => t.addEventListener("change", filterMeals));
-      filterMeals();
-    } catch (err) {
-      console.error("Error loading meals:", err);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Family Meals</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 20px;
     }
-  }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .filters {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .results {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+    }
+    li:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
 
-  loadMeals();
-</script>
+  <h1>🍽 Family Meals</h1>
 
+  <div class="filters person-toggle">
+    <label><input type="checkbox" value="mum" checked> Mum</label>
+    <label><input type="checkbox" value="dad" checked> Dad</label>
+    <label><input type="checkbox" value="Summer" checked> Summer</label>
+  </div>
+
+  <div class="results" id="results">
+    Loading meals...
+  </div>
+
+  <script>
+    async function loadMeals() {
+      try {
+        const response = await fetch("meals.json");
+        const meals = await response.json();
+
+        const toggles = document.querySelectorAll(".person-toggle input");
+        const resultsDiv = document.getElementById("results");
+
+        function filterMeals() {
+          const selected = Array.from(toggles)
+            .filter(t => t.checked)
+            .map(t => t.value);
+
+          const filtered = meals.filter(m =>
+            selected.every(person => m.likedBy.includes(person))
+          );
+
+          resultsDiv.innerHTML = "";
+          if (filtered.length > 0) {
+            const ul = document.createElement("ul");
+            filtered.forEach(m => {
+              const li = document.createElement("li");
+              li.textContent = m.meal;
+              ul.appendChild(li);
+            });
+            resultsDiv.appendChild(ul);
+          } else {
+            resultsDiv.textContent = "No meals found.";
+          }
+        }
+
+        toggles.forEach(t => t.addEventListener("change", filterMeals));
+        filterMeals();
+      } catch (err) {
+        console.error("Error loading meals:", err);
+        document.getElementById("results").textContent = "Failed to load meals.";
+      }
+    }
+
+    loadMeals();
+  </script>
+
+</body>
+</html>
