@@ -1,104 +1,193 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Family Meals</title>
+  <title>Meals</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
-      margin: 0;
+      background-color: #f5f5f5;
       padding: 20px;
     }
     h1 {
       text-align: center;
-      margin-bottom: 20px;
     }
     .filters {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
+      text-align: center;
       margin-bottom: 20px;
     }
-    .results {
-      max-width: 400px;
-      margin: 0 auto;
-      padding: 20px;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    .filters label {
+      margin: 0 10px;
     }
     ul {
-      list-style: none;
+      list-style-type: none;
       padding: 0;
+      max-width: 500px;
+      margin: 0 auto;
     }
     li {
-      padding: 8px;
-      border-bottom: 1px solid #ddd;
+      background: white;
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: left;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: background 0.3s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    li:last-child {
-      border-bottom: none;
+    li.highlight {
+      background: #ffefc2;
+      font-weight: bold;
+    }
+    .likes {
+      display: flex;
+      gap: 5px;
+    }
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .mum { background: pink; }
+    .dad { background: green; }
+    .summer { background: red; }
+
+    #squanch {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      background: #ff6ec7;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    #squanch:hover {
+      background: #e055a9;
+    }
+    #randomMeal {
+      text-align: center;
+      font-size: 18px;
+      margin-top: 20px;
+      color: #333;
     }
   </style>
 </head>
 <body>
+  <h1>Family Meals</h1>
 
-  <h1>🍽 Family Meals</h1>
-
-  <div class="filters person-toggle">
-    <label><input type="checkbox" value="Mum" checked> Mum</label>
-    <label><input type="checkbox" value="Dad" checked> Dad</label>
-    <label><input type="checkbox" value="Summer" checked> Summer</label>
+  <div class="filters">
+    <label><input type="checkbox" id="mum" checked> Mum</label>
+    <label><input type="checkbox" id="dad" checked> Dad</label>
+    <label><input type="checkbox" id="summer" checked> Summer</label>
   </div>
 
-  <div class="results" id="results">
-    Loading meals...
-  </div>
+  <ul id="mealList"></ul>
+
+  <button id="squanch">🍽️ Squanch</button>
+  <div id="randomMeal"></div>
 
   <script>
     async function loadMeals() {
-      try {
-        const response = await fetch("meals.json");
-        const meals = await response.json();
-
-        const toggles = document.querySelectorAll(".person-toggle input");
-        const resultsDiv = document.getElementById("results");
-
-        function filterMeals() {
-          const selected = Array.from(toggles)
-            .filter(t => t.checked)
-            .map(t => t.value);
-
-          const filtered = meals.filter(m =>
-            selected.every(person => m.likedBy.includes(person))
-          );
-
-          resultsDiv.innerHTML = "";
-          if (filtered.length > 0) {
-            const ul = document.createElement("ul");
-            filtered.forEach(m => {
-              const li = document.createElement("li");
-              li.textContent = m.meal;
-              ul.appendChild(li);
-            });
-            resultsDiv.appendChild(ul);
-          } else {
-            resultsDiv.textContent = "No meals found.";
-          }
-        }
-
-        toggles.forEach(t => t.addEventListener("change", filterMeals));
-        filterMeals();
-      } catch (err) {
-        console.error("Error loading meals:", err);
-        document.getElementById("results").textContent = "Failed to load meals.";
-      }
+      const response = await fetch("meals.json");
+      const meals = await response.json();
+      return meals;
     }
 
-    loadMeals();
-  </script>
+    function filterMeals(meals) {
+      const mum = document.getElementById("mum").checked;
+      const dad = document.getElementById("dad").checked;
+      const summer = document.getElementById("summer").checked;
 
+      if (!mum && !dad && !summer) {
+        return meals;
+      }
+
+      return meals.filter(meal => {
+        if (mum && !meal.likes.includes("mum")) return false;
+        if (dad && !meal.likes.includes("dad")) return false;
+        if (summer && !meal.likes.includes("summer")) return false;
+        return true;
+      });
+    }
+
+    function displayMeals(meals, highlightName = null) {
+      const mealList = document.getElementById("mealList");
+      mealList.innerHTML = "";
+      meals.forEach(meal => {
+        const li = document.createElement("li");
+        li.textContent = meal.name;
+
+        // likes display
+        const likesDiv = document.createElement("div");
+        likesDiv.classList.add("likes");
+
+        if (meal.likes.includes("mum")) {
+          const dot = document.createElement("span");
+          dot.classList.add("dot", "mum");
+          likesDiv.appendChild(dot);
+        }
+        if (meal.likes.includes("dad")) {
+          const dot = document.createElement("span");
+          dot.classList.add("dot", "dad");
+          likesDiv.appendChild(dot);
+        }
+        if (meal.likes.includes("summer")) {
+          const dot = document.createElement("span");
+          dot.classList.add("dot", "summer");
+          likesDiv.appendChild(dot);
+        }
+
+        li.appendChild(likesDiv);
+
+        if (highlightName && meal.name === highlightName) {
+          li.classList.add("highlight");
+        }
+        mealList.appendChild(li);
+      });
+    }
+
+    function pickRandom(meals) {
+      if (meals.length === 0) return null;
+      const randomIndex = Math.floor(Math.random() * meals.length);
+      return meals[randomIndex].name;
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const meals = await loadMeals();
+
+      function updateMeals() {
+        const filtered = filterMeals(meals);
+        displayMeals(filtered);
+        return filtered;
+      }
+
+      let currentMeals = updateMeals();
+
+      document.querySelectorAll(".filters input").forEach(input => {
+        input.addEventListener("change", () => {
+          currentMeals = updateMeals();
+          document.getElementById("randomMeal").textContent = "";
+        });
+      });
+
+      document.getElementById("squanch").addEventListener("click", () => {
+        const random = pickRandom(currentMeals);
+        if (random) {
+          document.getElementById("randomMeal").textContent = "👉 " + random;
+          displayMeals(currentMeals, random);
+        } else {
+          document.getElementById("randomMeal").textContent = "No meals match the current filters!";
+        }
+      });
+    });
+  </script>
 </body>
 </html>
+
