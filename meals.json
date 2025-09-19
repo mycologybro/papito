@@ -20,7 +20,7 @@
     "likedBy": ["Mum", "Dad", "Summer"]
   },
   {
-    "meal": "Stroganov",
+    "meal": "Stroganoff",
     "likedBy": ["Mum", "Dad", "Summer"]
   },
   {
@@ -37,7 +37,7 @@
   },
   {
     "meal": "Ratatouille",
-    "likedBy": ["Mum", "Dad", "Summer"]
+    "likedBy": ["Dad", "Summer"]
   },
   {
     "meal": "Burgers",
