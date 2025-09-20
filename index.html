@@ -1,233 +1,131 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Family Meals</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meal Ideas</title>
   <style>
     body {
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f5f5f5;
-      padding: 18px;
-      color: #111;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #fafafa;
     }
 
-    h1 { text-align:center; margin-bottom:6px; }
-
-    /* legend */
-    .legend {
-      max-width:560px;
-      margin: 6px auto 16px;
-      text-align:center;
-      font-size:14px;
+    /* Navbar */
+    nav {
+      background-color: #333;
+      overflow: hidden;
     }
-    .legend .dot { width:12px; height:12px; border-radius:50%; display:inline-block; margin:0 6px; vertical-align:middle; }
-    .legend span { margin: 0 10px; }
-
-    .filters {
-      text-align:center;
-      margin-bottom: 14px;
+    nav a {
+      float: left;
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 14px 20px;
+      text-decoration: none;
     }
-    .filters label { margin: 0 10px; font-weight:600; }
-
-    ul#mealList {
-      list-style:none;
-      padding:0;
-      margin: 10px auto;
-      max-width:720px;
+    nav a:hover {
+      background-color: #575757;
     }
-    ul#mealList li {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      background:#fff;
-      margin:8px 0;
-      padding:10px 12px;
-      border-radius:8px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.05);
-    }
-    ul#mealList li.highlight {
-      background: #fff7e6;
-      border: 1px solid #ffd28a;
-      font-weight:700;
-    }
-    .meal-name { flex:1; text-align:left; padding-right:12px; }
-
-    .likes { display:flex; gap:8px; align-items:center; }
-    .likes .dot { width:13px; height:13px; border-radius:50%; display:inline-block; }
-    .dot-mum { background: pink; }
-    .dot-dad { background: green; }
-    .dot-summer { background: red; }
-
-    #squanch {
-      display:block;
-      margin: 18px auto;
-      background:#ff6ec7;
-      color:white;
-      border:none;
-      padding:10px 18px;
-      border-radius:10px;
-      cursor:pointer;
-      font-weight:700;
-      box-shadow:0 6px 12px rgba(0,0,0,0.08);
-    }
-    #squanch:hover { background:#e055a9; }
-
-    #randomMeal {
-      text-align:center;
-      margin-top:14px;
-      font-size:18px;
-      min-height:22px;
-      font-weight:700;
+    nav a.active {
+      background-color: #4CAF50;
     }
 
-    .small-note { text-align:center; font-size:12px; color:#666; margin-top:8px; }
-    @media (max-width:640px) {
-      ul#mealList li { flex-direction:column; align-items:stretch; text-align:center; }
-      .meal-name { padding-right:0; }
-      .likes { justify-content:center; margin-top:8px; }
+    h1 {
+      text-align: center;
+      margin: 20px;
+    }
+
+    .family {
+      margin: 20px;
+      padding: 10px;
+    }
+
+    .meal {
+      margin: 10px 0;
+    }
+
+    .squanch {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 5px;
     }
   </style>
 </head>
 <body>
 
-  <h1>🍽 Family Meals</h1>
+  <!-- Navbar -->
+  <nav>
+    <a href="index.html" class="active">Meal Ideas</a>
+    <a href="recipes.html">Recipes</a>
+  </nav>
 
-  <div class="legend" aria-hidden="true">
-    <span class="dot dot-mum"></span> <span> Mum</span>
-    <span style="margin-left:12px" class="dot dot-dad"></span> <span> Dad</span>
-    <span style="margin-left:12px" class="dot dot-summer"></span> <span> Summer</span>
+  <h1>Meal Ideas</h1>
+
+  <!-- Family Toggles -->
+  <div class="family">
+    <label><input type="checkbox" id="Mum"> <span style="color:pink;">Mum</span></label>
+    <label><input type="checkbox" id="Dad"> <span style="color:green;">Dad</span></label>
+    <label><input type="checkbox" id="Summer"> <span style="color:red;">Summer</span></label>
   </div>
 
-  <div class="filters" role="region" aria-label="Who is eating">
-    <label><input type="checkbox" id="Mum" value="Mum" checked> Mum</label>
-    <label><input type="checkbox" id="Dad" value="Dad" checked> Dad</label>
-    <label><input type="checkbox" id="Summer" value="Summer" checked> Summer</label>
-  </div>
+  <!-- Button -->
+  <button class="squanch" onclick="pickRandomMeal()">Squanch</button>
 
-  <ul id="mealList" aria-live="polite">
-    <!-- meals inserted here -->
-  </ul>
-
-  <button id="squanch">🍀 Squanch</button>
-  <div id="randomMeal" aria-live="polite"></div>
-  <div class="small-note">Tip: if you uncheck everyone, the full list is shown.</div>
+  <!-- Meal list -->
+  <div id="meals"></div>
 
   <script>
-    // Helper: normalize incoming JSON (works with a few common layouts)
-    function normalizeMeals(raw) {
-      // raw may be an array directly or an object { meals: [...] }
-      const arr = Array.isArray(raw) ? raw : (Array.isArray(raw.meals) ? raw.meals : []);
-      return arr.map(item => {
-        const name = item.meal || item.name || item.title || "Unnamed meal";
-        const likesRaw = item.likedBy || item.likedby || item.likes || item.liked_by || item.LikedBy || [];
-        const likes = Array.isArray(likesRaw) ? likesRaw.map(x => String(x).trim()) : [];
-        return { name, likes };
-      });
+    const meals = [
+      { name: "Spaghetti Bolognese", likes: ["Mum", "Dad"] },
+      { name: "Pizza", likes: ["Mum", "Dad", "Summer"] },
+      { name: "Curry", likes: ["Dad"] },
+      { name: "Salad", likes: ["Mum", "Summer"] }
+    ];
+
+    const mealsDiv = document.getElementById("meals");
+    const checkboxes = {
+      Mum: document.getElementById("Mum"),
+      Dad: document.getElementById("Dad"),
+      Summer: document.getElementById("Summer")
+    };
+
+    function renderMeals() {
+      const selected = Object.keys(checkboxes).filter(name => checkboxes[name].checked);
+      let filtered;
+
+      if (selected.length === 0) {
+        filtered = meals;
+      } else {
+        filtered = meals.filter(meal =>
+          selected.every(name => meal.likes.includes(name))
+        );
+      }
+
+      mealsDiv.innerHTML = filtered.map(meal => `<div class="meal">${meal.name}</div>`).join("");
     }
 
-    // Load JSON and initialize
-    document.addEventListener('DOMContentLoaded', async () => {
-      const mealListEl = document.getElementById('mealList');
-      const randomEl = document.getElementById('randomMeal');
-      const checkboxes = Array.from(document.querySelectorAll('.filters input'));
-
-      let allMeals = [];
-      let currentMeals = [];
-
-      async function load() {
-        try {
-          const res = await fetch('meals.json', { cache: 'no-store' });
-          if (!res.ok) throw new Error('Could not fetch meals.json: ' + res.status);
-          const raw = await res.json();
-          allMeals = normalizeMeals(raw);
-        } catch (err) {
-          console.error(err);
-          mealListEl.innerHTML = '<li style="background:#ffecec;color:#900;">Failed to load meals.json</li>';
-          return;
-        }
-        update(); // initial render
+    function pickRandomMeal() {
+      const options = mealsDiv.querySelectorAll(".meal");
+      if (options.length > 0) {
+        const choice = options[Math.floor(Math.random() * options.length)].textContent;
+        alert("Tonight’s meal: " + choice);
+      } else {
+        alert("No meals match the selection!");
       }
+    }
 
-      function getSelectedPeople() {
-        return checkboxes.filter(cb => cb.checked).map(cb => cb.value);
-      }
+    Object.values(checkboxes).forEach(cb => cb.addEventListener("change", renderMeals));
 
-      function filterMeals() {
-        const selected = getSelectedPeople();
-        if (selected.length === 0) return allMeals.slice();
-        return allMeals.filter(m => selected.every(p => m.likes.includes(p)));
-      }
-
-      function renderList(meals, highlightName = null) {
-        mealListEl.innerHTML = '';
-        if (meals.length === 0) {
-          const li = document.createElement('li');
-          li.textContent = 'No meals match the current filters.';
-          li.style.textAlign = 'center';
-          mealListEl.appendChild(li);
-          return;
-        }
-
-        meals.forEach(m => {
-          const li = document.createElement('li');
-
-          const nameSpan = document.createElement('div');
-          nameSpan.className = 'meal-name';
-          nameSpan.textContent = m.name;
-
-          const likesDiv = document.createElement('div');
-          likesDiv.className = 'likes';
-          // add dots in consistent order Mum, Dad, Summer (if present)
-          if (m.likes.includes('Mum')) {
-            const s = document.createElement('span'); s.className = 'dot dot-mum'; s.title = 'Mum likes this'; likesDiv.appendChild(s);
-          }
-          if (m.likes.includes('Dad')) {
-            const s = document.createElement('span'); s.className = 'dot dot-dad'; s.title = 'Dad likes this'; likesDiv.appendChild(s);
-          }
-          if (m.likes.includes('Summer')) {
-            const s = document.createElement('span'); s.className = 'dot dot-summer'; s.title = 'Summer likes this'; likesDiv.appendChild(s);
-          }
-
-          li.appendChild(nameSpan);
-          li.appendChild(likesDiv);
-
-          if (highlightName && m.name === highlightName) li.classList.add('highlight');
-
-          mealListEl.appendChild(li);
-        });
-      }
-
-      function update() {
-        currentMeals = filterMeals();
-        renderList(currentMeals);
-        randomEl.textContent = '';
-      }
-
-      // checkbox listeners
-      checkboxes.forEach(cb => cb.addEventListener('change', update));
-
-      // Squanch button
-      document.getElementById('squanch').addEventListener('click', () => {
-        if (!currentMeals || currentMeals.length === 0) {
-          randomEl.textContent = 'No meals to pick from.';
-          return;
-        }
-        const idx = Math.floor(Math.random() * currentMeals.length);
-        const chosen = currentMeals[idx].name;
-        randomEl.textContent = '👉 ' + chosen;
-        renderList(currentMeals, chosen);
-        // optional: scroll highlight into view
-        setTimeout(() => {
-          const highlighted = document.querySelector('li.highlight');
-          if (highlighted) highlighted.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 80);
-      });
-
-      // initial load
-      await load();
-    });
+    renderMeals();
   </script>
 </body>
 </html>
