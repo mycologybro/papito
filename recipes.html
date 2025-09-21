@@ -32,38 +32,44 @@
       background-color: #4CAF50;
     }
 
-    /* Tabs */
-    .tab {
-      overflow: hidden;
-      border-bottom: 2px solid #ccc;
-      background-color: #f1f1f1;
-    }
-    .tab button {
-      background-color: inherit;
-      float: left;
-      border: none;
-      outline: none;
-      cursor: pointer;
-      padding: 14px 16px;
-      transition: 0.3s;
-      font-size: 16px;
-    }
-    .tab button:hover {
-      background-color: #ddd;
-    }
-    .tab button.active {
-      background-color: #ccc;
+    h1 {
+      text-align: center;
+      margin: 20px;
     }
 
-    /* Tab content */
-    .tabcontent {
+    /* Tabs */
+    .tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .tabs button {
+      padding: 10px 20px;
+      margin: 0 5px;
+      cursor: pointer;
+      border: none;
+      background: #ddd;
+      border-radius: 5px 5px 0 0;
+    }
+    .tabs button.active {
+      background: #4CAF50;
+      color: white;
+    }
+    .tab-content {
       display: none;
       padding: 20px;
-      border-top: none;
+      border: 1px solid #ccc;
+      background: white;
+      margin: 0 20px;
+      border-radius: 0 0 5px 5px;
+    }
+    .tab-content.active {
+      display: block;
     }
 
-    h2 {
-      margin-top: 0;
+    ul {
+      margin: 0;
+      padding-left: 20px;
     }
   </style>
 </head>
@@ -75,52 +81,66 @@
     <a href="recipes.html" class="active">Recipes</a>
   </nav>
 
-  <h1 style="text-align:center; margin:20px;">Recipes</h1>
+  <h1>Recipes</h1>
 
   <!-- Tabs -->
-  <div class="tab">
-    <button class="tablinks active" onclick="openRecipe(event, 'Yorkshire')">Yorkshire Pudding</button>
-    <!-- Add more tabs here later -->
+  <div class="tabs">
+    <button class="tablink active" onclick="openTab(event, 'yorkshire')">Yorkshire Pudding</button>
+    <button class="tablink" onclick="openTab(event, 'pastry')">Pastry</button>
   </div>
 
-  <!-- Recipe content -->
-  <div id="Yorkshire" class="tabcontent" style="display:block;">
+  <!-- Yorkshire Pudding -->
+  <div id="yorkshire" class="tab-content active">
     <h2>Yorkshire Pudding</h2>
     <h3>Ingredients</h3>
     <ul>
-      <li>140g plain flour (about 200ml/7fl oz)</li>
-      <li>4 eggs (200ml/7fl oz)</li>
+      <li>140g plain flour</li>
+      <li>4 eggs</li>
       <li>200ml milk</li>
       <li>Sunflower oil (for cooking)</li>
     </ul>
-
     <h3>Method</h3>
     <ol>
       <li>Heat oven to 230C/fan 210C/gas 8.</li>
-      <li>Drizzle a little sunflower oil evenly into two 4-hole Yorkshire pudding tins or two 12-hole non-stick muffin tins and place in the oven to heat through.</li>
-      <li>To make the batter, tip 140g plain flour into a bowl and beat in 4 eggs until smooth.</li>
-      <li>Gradually add 200ml milk and carry on beating until the mix is completely lump-free. Season with salt and pepper.</li>
-      <li>Pour the batter into a jug, then remove the hot tins from the oven. Carefully and evenly pour the batter into the holes.</li>
-      <li>Place the tins back in the oven and leave undisturbed for 20-25 mins until the puddings have puffed up and browned.</li>
-      <li>Serve immediately. You can now cool them and freeze for up to 1 month.</li>
+      <li>Drizzle sunflower oil into tins and heat in oven.</li>
+      <li>Mix flour and eggs until smooth.</li>
+      <li>Gradually add milk and beat until lump-free. Season with salt and pepper.</li>
+      <li>Pour batter into tins and bake 20–25 mins until puffed and browned.</li>
+      <li>Serve immediately or freeze for up to 1 month.</li>
+    </ol>
+  </div>
+
+  <!-- Pastry -->
+  <div id="pastry" class="tab-content">
+    <h2>Pastry</h2>
+    <h3>Ingredients</h3>
+    <ul>
+      <li>175g/6oz plain flour</li>
+      <li>Pinch salt</li>
+      <li>85g/3oz butter, cubed</li>
+      <li>2–3 tbsp cold water</li>
+    </ul>
+    <h3>Method</h3>
+    <ol>
+      <li>Put flour and salt in a large bowl and add the butter cubes.</li>
+      <li>Rub butter into flour with fingertips until it looks like coarse breadcrumbs.</li>
+      <li>Stir in 1–2 tbsp water with a knife, adding more only if needed, until dough binds.</li>
+      <li>Gently knead until smooth — handle as little as possible.</li>
+      <li>Alternatively, use a food processor to combine flour, salt, and butter, then add water gradually.</li>
+      <li>Wrap in cling film and chill for 30 mins before use, or roll out and rest before baking.</li>
     </ol>
   </div>
 
   <script>
-    function openRecipe(evt, recipeName) {
-      var i, tabcontent, tablinks;
-      tabcontent = document.getElementsByClassName("tabcontent");
-      for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-      }
-      tablinks = document.getElementsByClassName("tablinks");
-      for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
-      }
-      document.getElementById(recipeName).style.display = "block";
-      evt.currentTarget.className += " active";
+    function openTab(evt, tabName) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tablink').forEach(btn => btn.classList.remove('active'));
+
+      // Show current tab
+      document.getElementById(tabName).classList.add('active');
+      evt.currentTarget.classList.add('active');
     }
   </script>
-
 </body>
 </html>
